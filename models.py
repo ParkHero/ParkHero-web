@@ -72,8 +72,10 @@ class CarPark(db.Model):
 
     def __init__(self, name, type, capacity, free, cost, longitude, latitude, address):
         self.name = name
+        self.type = type
         self.capacity = capacity
         self.free = free
+        self.cost = cost
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
 
