@@ -1,8 +1,8 @@
 from functools import wraps
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, g
 from flask.ext.bcrypt import Bcrypt
 import requests
-from models import db, CarPark, User, bcrypt, Token
+from models import db, CarPark, User, bcrypt, Token, Checkin
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -77,8 +77,13 @@ def token_required(f):
             data = request.get_json()
         else:
             data = request.args
-        if data is None or not 'token' in data or Token.query.filter_by(id=data['token']).first() is None:
+
+        token = None
+        if data is not None and 'token' in data:
+            token = Token.query.filter_by(id=data['token']).first()
+        if token is None:
             return jsonify(error="Required parameters \"token\" is missing or invalid"), 400
+        g.user = token.user
         return f(*args, **kwargs)
     return decorated_function
 
@@ -89,10 +94,14 @@ def carparks_list():
     return 'TODO!'
 
 
-@app.route('/carparks/<carpark_uuid>/checkin', methods=['post'])
+@app.route('/carparks/<carpark_id>/checkin', methods=['post'])
 @token_required
-def carparks_checkin(carpark_uuid):
-    return 'TODO!'
+def carparks_checkin(carpark_id):
+    carpark = CarPark.get_or_404(carpark_id)
+    checkin = Checkin(g.user, carpark)
+    db.session.add(checkin)
+    db.session.commit()
+    return jsonify(carpark=carpark.json())
 
 
 @app.route('/carparks/<carpark_uuid>/checkout', methods=['post'])

@@ -1,3 +1,4 @@
+from datetime import datetime
 import uuid
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -14,7 +15,9 @@ class User(db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(200))
     creditcard = db.Column(db.String(100))
+    date_created = db.Column(db.DateTime, default=datetime.now)
     tokens = db.relationship('Token', backref='user', lazy='dynamic')
+    checkins = db.relationship('Checkin', backref='user', lazy='dynamic')
 
     def __init__(self, email, password, name, creditcard):
         self.email = email
@@ -63,3 +66,16 @@ class CarPark(db.Model):
         self.slots_free = slots_free
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
+
+
+class Checkin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    checkin = db.Column(db.DateTime, default=datetime.now)
+    checkout = db.Column(db.DateTime, default=None, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    carpark_id = db.Column(db.Integer, db.ForeignKey('car_park.id'))
+    carpark = db.relationship('CarPark', backref=db.backref('checkins', lazy='dynamic'))
+
+    def __init__(self, user, car_park):
+        self.user_id = user.id
+        self.car_park = car_park
