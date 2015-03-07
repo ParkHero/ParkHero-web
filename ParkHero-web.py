@@ -62,7 +62,7 @@ def users_login():
         for required_parameter in required_parameters:
             if not required_parameter in data:
                 return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
-        user = User.query.filter(email=data['email']).first()
+        user = User.query.filter_by(email=data['email']).first()
         if user is None or not user.check_password(data['password']):
             return jsonify(error="Invalid credentials"), 400
         return jsonify(user=user.json())
