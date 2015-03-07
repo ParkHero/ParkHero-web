@@ -113,13 +113,17 @@ def carparks_checkin(carpark_id):
     checkin = Checkin(g.user, carpark)
     db.session.add(checkin)
     db.session.commit()
-    return jsonify(carpark=carpark.json())
+    return jsonify(carpark=carpark.json(), spot=None)
 
 
 @app.route('/carparks/<carpark_id>/checkout', methods=['post'])
 @token_required
 def carparks_checkout(carpark_id):
-    return 'TODO!'
+    carpark = CarPark.get_or_404(carpark_id)
+    checkin = carpark.checkins.filter_by(user_id=g.user.id).first_or_404()
+    checkin.checkout_now()
+    db.session.commit()
+    return jsonify(carpark=carpark.json(), duration=checkin.duration, cost=checkin.cost)
 
 
 if __name__ == '__main__':

@@ -59,6 +59,7 @@ class CarPark(db.Model):
     slots_free = db.Column(db.Integer, index=True)
     location = db.Column(Geometry())
     address = db.Column(db.String(200))
+    cost = db.Column(db.DECIMAL, default=5.0)
 
     def __init__(self, name, slots, slots_free, longitude, latitude, address):
         self.name = name
@@ -82,6 +83,8 @@ class Checkin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     checkin = db.Column(db.DateTime, default=datetime.now)
     checkout = db.Column(db.DateTime, default=None, nullable=True)
+    duration = db.Column(db.Integer)
+    cost = db.Column(db.DECIMAL)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     carpark_id = db.Column(db.Integer, db.ForeignKey('car_park.id'))
     carpark = db.relationship('CarPark', backref=db.backref('checkins', lazy='dynamic'))
@@ -89,3 +92,9 @@ class Checkin(db.Model):
     def __init__(self, user, car_park):
         self.user_id = user.id
         self.car_park = car_park
+
+    def checkout_now(self):
+        self.checkout = datetime.now()
+        duration = self.checkout - self.checkin
+        self.duration = (duration.days * 60 * 24 + duration.seconds / 60)
+        self.cost = duration * self.carpark.cost
