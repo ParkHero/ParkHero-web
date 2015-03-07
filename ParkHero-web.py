@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import Flask, render_template, request, jsonify
 from flask.ext.bcrypt import Bcrypt
 import requests
@@ -69,17 +70,33 @@ def users_login():
     return 'NO HTML YET'
 
 
+def token_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if request.method == 'POST':
+            data = request.get_json()
+        else:
+            data = request.args
+        if data is None or not 'token' in data or Token.query.filter_by(id=data['token']).first() is None:
+            return jsonify(error="Required parameters \"token\" is missing or invalid"), 400
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @app.route('/carparks')
+@token_required
 def carparks_list():
     return 'TODO!'
 
 
 @app.route('/carparks/<carpark_uuid>/checkin', methods=['post'])
+@token_required
 def carparks_checkin(carpark_uuid):
     return 'TODO!'
 
 
 @app.route('/carparks/<carpark_uuid>/checkout', methods=['post'])
+@token_required
 def carparks_checkout(carpark_uuid):
     return 'TODO!'
 
