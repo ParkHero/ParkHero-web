@@ -5,6 +5,7 @@ __pycache__/
 # C extensions
 *.so
 
+
 # Distribution / packaging
 .Python
 env/
@@ -53,5 +54,7 @@ docs/_build/
 # PyBuilder
 target/
 
+
 # PyCharm
 .idea/
+.komodotools
