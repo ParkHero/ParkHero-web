@@ -1,8 +1,10 @@
+from flask.ext.bcrypt import Bcrypt
 from flask.ext.sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
 from sqlalchemy import func
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 
 class User(db.Model):
@@ -13,10 +15,34 @@ class User(db.Model):
     creditcard = db.Column(db.String(100))
     tokens = db.relationship('Token', backref='user', lazy='dynamic')
 
+    def __init__(self, email, password, name, creditcard):
+        self.email = email
+        self.password = bcrypt.generate_password_hash(password)
+        self.name = name
+        self.creditcard = creditcard
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
+    def json(self):
+        token = self.tokens.first()
+        return {
+            'id': self.id,
+            'email': self.email,
+            'name': self.name,
+            'token': token.json() if token else None
+        }
+
+    def add_token(self, token):
+        self.tokens.append(token)
+
 
 class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def json(self):
+        return self.id
 
 
 class CarPark(db.Model):

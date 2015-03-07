@@ -1,10 +1,12 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
+from flask.ext.bcrypt import Bcrypt
 import requests
-from models import db, CarPark
+from models import db, CarPark, User, bcrypt, Token
 
 app = Flask(__name__)
 app.config.from_object('settings')
 db.init_app(app)
+bcrypt.init_app(app)
 
 JSON_URL = 'http://data.stadt-zuerich.ch/ogd.GnEZFYm.link'
 
@@ -33,7 +35,21 @@ def install():
 
 @app.route('/users/register', methods=['post'])
 def users_register():
-    return 'TODO!'
+    if request.get_json() is not None:
+        data = request.get_json()
+        # Check for required parameters
+        required_parameters = ['email', 'password', 'name', 'creditcard']
+        for required_parameter in required_parameters:
+            if not required_parameter in data:
+                return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
+        user = User(data['email'], data['password'], data['name'], data['creditcard'])
+        token = Token()
+        user.add_token(token)
+        db.session.add(user)
+        db.session.add(token)
+        db.session.commit()
+        return jsonify(user=user.json())
+    return 'NO HTML YET'
 
 
 @app.route('/users/login', methods=['post'])
