@@ -59,7 +59,22 @@ def users_login():
 
 @app.route('/carparks')
 def carparks_list():
-    return 'TODO!'
+    if request.get_json() is not None:
+        data = request.get_json()
+
+        required_parameters = {"token", "latitude", "longitude"}
+        for required_parameter in required_parameters:
+            if not required_parameter in data:
+                return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
+
+        if isAuthenticated(data["token"]):
+            long = data["longitude"]
+            lat = data["latitude"]
+
+            CarPark.query.filter_by()
+
+
+    return 'NO HTML YET'
 
 
 @app.route('/carparks/<carpark_uuid>/checkin', methods=['post'])
@@ -70,7 +85,6 @@ def carparks_checkin(carpark_uuid):
 @app.route('/carparks/<carpark_uuid>/checkout', methods=['post'])
 def carparks_checkout(carpark_uuid):
     return 'TODO!'
-
 
 if __name__ == '__main__':
     app.run()
