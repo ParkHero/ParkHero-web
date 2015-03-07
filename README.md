@@ -1,5 +1,13 @@
 # ParkHero-web
 
+## Example for local_settings.py
+
+```python
+DEBUG = True
+SECRET_KEY = 'SEKRET!!!!!!!'
+SQLALCHEMY_DATABASE_URI = 'postgresql://user:password@host/database'
+```
+
 ## API
 
 ### POST /users/register
