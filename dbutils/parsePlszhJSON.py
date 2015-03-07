@@ -28,7 +28,7 @@ def run():
         longitude = phfeature['geometry']['coordinates'][0]
         latitude = phfeature['geometry']['coordinates'][1]
 
-        sqlf.write("(\"{0}\", {1}, {2}, {3}, {4}, \"{5}\"), \r\n".format(
+        sqlf.write("(\'{0}\', {1}, {2}, {3}, {4}, \'{5}\'), \r\n".format(
                         props['Name'], props['oeffentlich'], props['oeffentlich'],
                         longitude, latitude, props['Adresse']))
 

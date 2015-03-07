@@ -1,6 +1,18 @@
 # ParkHero-web
 
+## Example for local_settings.py
+
+```python
+DEBUG = True
+SECRET_KEY = 'SEKRET!!!!!!!'
+SQLALCHEMY_DATABASE_URI = 'postgresql://user:password@host/database'
+```
+
 ## API
+
+### General
+ * Response code for successfull requests should always be 200
+ * If response code is not 200, json response contains a field 'error' with the error message
 
 ### POST /users/register
 
@@ -17,7 +29,6 @@
 #### Response:
 ```json
 {
-    success: true,
     user: {
         id: 124,
         token: 'uuid-aasdf',
@@ -26,10 +37,9 @@
     }
 }
 ```
-OR
+OR ON ERROR
 ```json
 {
-    success: false,
     error: 'Error message'
 }
 ```
@@ -47,7 +57,6 @@ OR
 #### Response:
 ```json
 {
-    success: true,
     user: {
         id: 'uuid-...',
         token: 'uuid-aasdf',
@@ -56,10 +65,9 @@ OR
     }
 }
 ```
-OR
+OR ON ERROR
 ```json
 {
-    success: false,
     error: 'Error message'
 }
 ```
@@ -69,6 +77,7 @@ OR
 #### Request:
 ```json
 {
+    token: 'uuid-...',
     longitude: 1.24567,
     latitude: 7.654321
 }
@@ -77,7 +86,6 @@ OR
 #### Response:
 ```json
 {
-    success: true,
     carparks: [
         {
             id: 'uuid-...',
@@ -95,13 +103,18 @@ OR
     ]
 }
 ```
+OR ON ERROR
+```json
+{
+    error: 'Error message'
+}
+```
 
 ### POST /carparks/{carpark_UUID}/checkin
 
 #### Request:
 ```json
 {
-    user_id: 'uuid-...',
     token: 'uuid-...',
 }
 ```
@@ -109,7 +122,6 @@ OR
 #### Response:
 ```json
 {
-    success: true,
     carpark: {
         id: 'uuid-...',
         name: 'foo',
@@ -128,13 +140,18 @@ OR
     }
 }
 ```
+OR ON ERROR
+```json
+{
+    error: 'Error message'
+}
+```
 
 ### POST /carparks/{carpark_UUID}/checkout
 
 #### Request:
 ```json
 {
-    user_id: 'uuid-...',
     token: 'uuid-...',
 }
 ```
@@ -142,7 +159,6 @@ OR
 #### Response:
 ```json
 {
-    success: true,
     carpark: {
         id: 'uuid-...',
         name: 'foo',
@@ -158,5 +174,11 @@ OR
     }
     duration: 65,
     cost: 123
+}
+```
+OR ON ERROR
+```json
+{
+    error: 'Error message'
 }
 ```

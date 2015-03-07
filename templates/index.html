@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ super() }} - Index{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <div class="container text-center">
+            <a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" class="img-circle" width="300px"></a>
+            <h1>ParkHero</h1>
+            <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+            <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more »</a></p>
+        </div>
+    </div>
+
+    <div class="container">
+
+    </div>
+{% endblock %}
