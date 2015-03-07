@@ -59,7 +59,7 @@ class CarPark(db.Model):
     free = db.Column(db.Integer, index=True)
     location = db.Column(Geometry())
     address = db.Column(db.String(200))
-    cost = db.Column(db.DECIMAL, default=5.0)
+    cost = db.Column(db.Integer, default=500)
 
     def __init__(self, name, capacity, free, longitude, latitude, address):
         self.name = name
@@ -77,7 +77,7 @@ class CarPark(db.Model):
             'capacity': self.capacity,
             'free': self.free,
             'address': self.address,
-            'cost': float(self.cost),
+            'cost': self.cost,
             'latitude': db.session.scalar(func.ST_X(self.location)),
             'longitude': db.session.scalar(func.ST_Y(self.location)),
             'distance': None
@@ -94,7 +94,7 @@ class Checkin(db.Model):
     checkin = db.Column(db.DateTime, default=datetime.now)
     checkout = db.Column(db.DateTime, default=None, nullable=True)
     duration = db.Column(db.Integer)
-    cost = db.Column(db.DECIMAL)
+    cost = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     carpark_id = db.Column(db.Integer, db.ForeignKey('car_park.id'))
     carpark = db.relationship('CarPark', backref=db.backref('checkins', lazy='dynamic'))
@@ -107,7 +107,7 @@ class Checkin(db.Model):
         self.checkout = datetime.now()
         duration = self.checkout - self.checkin
         self.duration = (duration.days * 60 * 24 + duration.seconds / 60)
-        self.cost = duration * self.carpark.cost
+        self.cost = int(duration / 60.0 * self.carpark.cost)
 
     def json(self):
         return {
