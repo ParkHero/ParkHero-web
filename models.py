@@ -89,8 +89,8 @@ class CarPark(db.Model):
             'free': self.free,
             'address': self.address,
             'cost': self.cost,
-            'latitude': longitude if longitude else 0,
-            'longitude': latitude if latitude else 0,
+            'latitude': latitude if latitude else 0,
+            'longitude': longitude if longitude else 0,
             'distance': distance if distance else 0
         }
 
