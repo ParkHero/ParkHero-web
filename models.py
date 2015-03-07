@@ -55,16 +55,16 @@ class Token(db.Model):
 class CarPark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    slots = db.Column(db.Integer)
-    slots_free = db.Column(db.Integer, index=True)
+    capacity = db.Column(db.Integer)
+    free = db.Column(db.Integer, index=True)
     location = db.Column(Geometry())
     address = db.Column(db.String(200))
     cost = db.Column(db.DECIMAL, default=5.0)
 
-    def __init__(self, name, slots, slots_free, longitude, latitude, address):
+    def __init__(self, name, capacity, free, longitude, latitude, address):
         self.name = name
-        self.slots = slots
-        self.slots_free = slots_free
+        self.slots = capacity
+        self.slots_free = free
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
 
@@ -74,8 +74,8 @@ class CarPark(db.Model):
             'name': self.name,
             'type': 0,
             'image': 'http://placehold.it/350x150',
-            'slots': self.slots,
-            'free_slots': self.slots_free,
+            'capacity': self.slots,
+            'free': self.slots_free,
             'address': self.address,
             'cost': self.cost,
             'latitude': db.session.scalar(func.ST_X(self.location)),
