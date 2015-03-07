@@ -34,6 +34,9 @@ def install():
     # Add default user
     user = User('aaaa', '123456', 'Hans Test', 'test cc')
     db.session.add(user)
+    token = Token()
+    db.session.add(token)
+    user.add_token(token)
     db.session.commit()
     return 'DONE'
 
@@ -82,9 +85,11 @@ def token_required(f):
             data = request.args
 
         token = None
-        if data is not None and 'token' in data:
-            token = Token.query.filter_by(id=data['token']).first()
-        if token is None:
+        try:
+            token = Token.query.get(data['token'])
+            if token is None:
+                raise KeyError()
+        except (TypeError, KeyError):
             return jsonify(error="Required parameters \"token\" is missing or invalid"), 400
         g.user = token.user
         return f(*args, **kwargs)
