@@ -131,6 +131,7 @@ Parameters sent in query string
             "distance": 1234,
             "capacity": 100,
             "free": 12,
+            'free_last_update': 2015-03-08T00:11:02.874283, 
             "cost": 1.23,
             "todo": true
         }
@@ -166,6 +167,7 @@ OR ON ERROR
         "distance": 1234,
         "capacity": 100,
         "free": 12,
+        'free_last_update': 2015-03-08T00:11:02.874283, 
         "cost": 1.23,
         "todo": true
     },
@@ -203,6 +205,7 @@ OR ON ERROR
         "distance": 1234,
         "capacity": 100,
         "free": 12,
+        'free_last_update': 2015-03-08T00:11:02.874283 (in ISO 8601 format), 
         "cost": 1.23,
         "todo": true
     }
@@ -218,4 +221,4 @@ OR ON ERROR
 ```
 
 ### GET /refresh_spots
-
+Update free spots in database. Should be called by crontab
