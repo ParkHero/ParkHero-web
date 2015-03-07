@@ -1,0 +1,18 @@
+uwsgi:
+  socket: /tmp/uwsgi_ph.sock
+  daemonize: /var/log/uwsgi_ph.log
+  pidfile: /var/run/uwsgi_ph.pid
+  master: true
+  workers: 2
+
+  uid: www-data
+  gid: www-data
+
+  vacuum: true
+  wsgi-file: /srv/ParkHero/ParkHero-web/ParkHero-web.py
+  callable: app
+  processes: 1
+  virtualenv: /srv/ParkHero/env/
+  pythonpath: /srv/ParkHero/env/lib/python2.4/site-packages
+  pythonpath: /srv/ParkHero/ParkHero-web/
+  post-buffering: 8192
