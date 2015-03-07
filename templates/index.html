@@ -3,6 +3,7 @@
 {% block title %}{{ super() }} - Index{% endblock %}
 
 {% block content %}
+<div id="content-intro" class="content">
     <div class="jumbotron">
         <div class="container text-center">
             <a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" class="img-circle" width="300px"></a>
@@ -15,4 +16,18 @@
     <div class="container">
 
     </div>
+</div>
+
+<div id="content-map" class="content container">
+    <h1>Map</h1>
+    <div id="map" style="width: 100%; height: 600px;"></div>
+</div>
+
+<div id="content-history" class="content container">
+    <h1>History</h1>
+</div>
+
+<div id="content-account" class="content container">
+    <h1>Account</h1>
+</div>
 {% endblock %}
