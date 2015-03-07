@@ -6,6 +6,7 @@ from models import db, CarPark, User, bcrypt, Token, Checkin
 from sqlalchemy import func
 from livedata.live_get_collection import LiveGetCollection
 from utils import token_required
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -51,6 +52,7 @@ def reload_spots():
         car_park = CarPark.query.filter_by(name=data.name).first()
         if car_park:
             car_park.free = data.free
+            car_park.free_last_update = datetime.now()
             i += 1
 
     db.session.commit()
