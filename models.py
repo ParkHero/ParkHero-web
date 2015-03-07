@@ -1,3 +1,4 @@
+import uuid
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
@@ -38,8 +39,11 @@ class User(db.Model):
 
 
 class Token(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(36), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __init__(self):
+        self.id = str(uuid.uuid4())
 
     def json(self):
         return self.id
