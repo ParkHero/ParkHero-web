@@ -216,3 +216,6 @@ OR ON ERROR
     "error": "Error message"
 }
 ```
+
+### GET /refresh_spots
+
