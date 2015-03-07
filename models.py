@@ -70,12 +70,17 @@ class CarPark(db.Model):
 
     def json(self):
         return {
+            'id': self.id,
             'name': self.name,
+            'type': 0,
+            'image': 'http://placehold.it/350x150',
             'slots': self.slots,
             'free_slots': self.slots_free,
             'address': self.address,
+            'cost': self.cost,
             'latitude': db.session.scalar(func.ST_X(self.location)),
-            'longitude': db.session.scalar(func.ST_Y(self.location))
+            'longitude': db.session.scalar(func.ST_Y(self.location)),
+            'distance': 123,
         }
 
 
