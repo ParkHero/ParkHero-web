@@ -31,6 +31,9 @@ def install():
         carpark = CarPark(props['Name'], props['oeffentlich'], props['oeffentlich'], longitude, latitude,
                           props['Adresse'])
         db.session.add(carpark)
+    # Add default user
+    user = User('aaaa', '123456', 'Hans Test', 'test cc')
+    db.session.add(user)
     db.session.commit()
     return 'DONE'
 
