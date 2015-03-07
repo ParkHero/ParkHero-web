@@ -7,14 +7,30 @@
 #### Request:
 ```json
 {
-    todo: true,
+    email: 'sam@ple.email',
+    password: 'samplepwd',
+    name: 'Sample Name',
+    creditcard: '1234',
 }
 ```
  
 #### Response:
 ```json
 {
-    todo: true,
+    success: true,
+    user: {
+        id: 124,
+        token: 'uuid-aasdf',
+        email: 'sam@ple.email',
+        name: 'Sample Name'
+    }
+}
+```
+OR
+```json
+{
+    success: false,
+    error: 'Error message'
 }
 ```
 
@@ -23,14 +39,28 @@
 #### Request:
 ```json
 {
-    todo: true,
+    email: 'sam@ple.email',
+    password: 'samplepwd',
 }
 ```
  
 #### Response:
 ```json
 {
-    todo: true,
+    success: true,
+    user: {
+        id: 'uuid-...',
+        token: 'uuid-aasdf',
+        email: 'sam@ple.email',
+        name: 'Sample Name'
+    }
+}
+```
+OR
+```json
+{
+    success: false,
+    error: 'Error message'
 }
 ```
 
@@ -39,45 +69,94 @@
 #### Request:
 ```json
 {
-    todo: true,
+    longitude: 1.24567,
+    latitude: 7.654321
 }
 ```
  
 #### Response:
 ```json
 {
-    todo: true,
+    success: true,
+    carparks: [
+        {
+            id: 'uuid-...',
+            name: 'foo',
+            type: 1,
+            image: 'http://test/',
+            longitude: 1.234567,
+            latitude: 7.654321,
+            distance: 1234,
+            capacity: 100,
+            free: 12,
+            cost: 1.23,
+            todo: true
+        }
+    ]
 }
 ```
 
-### POST /carparks/checkin
+### POST /carparks/{carpark_UUID}/checkin
 
 #### Request:
 ```json
 {
-    todo: true,
+    user_id: 'uuid-...',
+    token: 'uuid-...',
 }
 ```
  
 #### Response:
 ```json
 {
-    todo: true,
+    success: true,
+    carpark: {
+        id: 'uuid-...',
+        name: 'foo',
+        type: 1,
+        image: 'http://test/',
+        longitude: 1.234567,
+        latitude: 7.654321,
+        distance: 1234,
+        capacity: 100,
+        free: 12,
+        cost: 1.23,
+        todo: true
+    },
+    spot: {
+        todo: true
+    }
 }
 ```
 
-### POST /carparks/checkout
+### POST /carparks/{carpark_UUID}/checkout
 
 #### Request:
 ```json
 {
-    todo: true,
+    user_id: 'uuid-...',
+    token: 'uuid-...',
 }
 ```
  
 #### Response:
 ```json
 {
-    todo: true,
+    success: true,
+    carpark: {
+        id: 'uuid-...',
+        name: 'foo',
+        type: 1,
+        image: 'http://test/',
+        longitude: 1.234567,
+        latitude: 7.654321,
+        distance: 1234,
+        capacity: 100,
+        free: 12,
+        cost: 1.23,
+        todo: true
+    }
+    duration: 65,
+    cost: 123
 }
 ```
