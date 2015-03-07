@@ -16,3 +16,4 @@ uwsgi:
   pythonpath: /srv/ParkHero/env/lib/python2.4/site-packages
   pythonpath: /srv/ParkHero/ParkHero-web/
   post-buffering: 8192
+  py-autoreload: 3
