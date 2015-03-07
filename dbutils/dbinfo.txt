@@ -1,0 +1,13 @@
+> adduser -r -s /bin/false pgph
+> passwd pgph #aabbcc
+> su - postgres
+> postgres@leo:~$ psql template1
+> template1=# CREATE USER pgph WITH PASSWORD 'aabbcc';
+> template1=# CREATE DATABASE parkhero;
+> template1=# GRANT ALL PRIVILEGES ON DATABASE parkhero to pgph;
+
+psql -d [yourdatabase] -c "CREATE EXTENSION postgis;"
+psql -d [yourdatabase] -c "CREATE EXTENSION fuzzystrmatch;"
+psql -d [yourdatabase] -c "CREATE EXTENSION postgis_tiger_geocoder;"
+
+adduser -r -s /bin/false pgph
