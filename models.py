@@ -68,8 +68,8 @@ class CarPark(db.Model):
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
 
-    def json(self):
-        return {
+    def json(self, lonlat=None):
+        o = {
             'id': self.id,
             'name': self.name,
             'type': 0,
@@ -80,8 +80,13 @@ class CarPark(db.Model):
             'cost': float(self.cost),
             'latitude': db.session.scalar(func.ST_X(self.location)),
             'longitude': db.session.scalar(func.ST_Y(self.location)),
-            'distance': 123,
+            'distance': None
         }
+        if lonlat and len(lonlat) == 2:
+            longitude, latitude = lonlat
+            o['distance'] = db.session.scalar(
+                func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)))
+        return o
 
 
 class Checkin(db.Model):
@@ -103,3 +108,14 @@ class Checkin(db.Model):
         duration = self.checkout - self.checkin
         self.duration = (duration.days * 60 * 24 + duration.seconds / 60)
         self.cost = duration * self.carpark.cost
+
+    def json(self):
+        return {
+            'id': self.id,
+            'checkin': self.checkin,
+            'checkout': self.checkout,
+            'duration': self.duration,
+            'cost': self.cost,
+            'user': self.user.json(),
+            'carpark': self.carpark.json()
+        }

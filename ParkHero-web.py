@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, jsonify, g
 import requests
 from models import db, CarPark, User, bcrypt, Token, Checkin
 from sqlalchemy import func
+from utils import token_required
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -76,25 +77,11 @@ def users_login():
     return 'NO HTML YET'
 
 
-def token_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if request.method == 'POST':
-            data = request.get_json()
-        else:
-            data = request.args
-
-        token = None
-        try:
-            token = Token.query.get(data['token'])
-            if token is None:
-                raise KeyError()
-        except (TypeError, KeyError):
-            return jsonify(error="Required parameters \"token\" is missing or invalid"), 400
-        g.user = token.user
-        return f(*args, **kwargs)
-
-    return decorated_function
+@app.route('/users/checkins')
+@token_required
+def users_checkins():
+    checkins = g.user.checkins.order_by(Checkin.id).all()
+    return jsonify(user=g.user.json(), checkins=[checkin.json() for checkin in checkins])
 
 
 @app.route('/carparks')
@@ -111,7 +98,7 @@ def carparks_list():
     distance = 1000
     carpark_list = CarPark.query.filter(
         func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)) < distance).all()
-    return jsonify(carparks=[cp.json() for cp in carpark_list])
+    return jsonify(carparks=[cp.json((longitude, latitude)) for cp in carpark_list])
 
 
 @app.route('/carparks/<carpark_id>/checkin', methods=['post'])
