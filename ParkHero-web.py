@@ -54,7 +54,7 @@ def reload_spots():
             i += 1
 
     db.session.commit()
-    return str(i) + ' spots updated'
+    return jsonify(updated=str(i))
 
 @app.route('/users/register', methods=['post'])
 def users_register():

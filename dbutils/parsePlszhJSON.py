@@ -3,7 +3,6 @@ __author__ = 'leo'
 import json
 
 
-
 def run():
     json_dump = open('../data/parkhaus.json')
 
@@ -16,6 +15,7 @@ def run():
                "name TEXT,"
                "slots INT,"
                "free_slots INT,"
+               "free_slots_last_updated timestamp default now(),"
                "longitude FLOAT,"
                "latitude FLOAT,"
                "address TEXT);\r\n")
@@ -27,6 +27,7 @@ def run():
         props = phfeature['properties']
         longitude = phfeature['geometry']['coordinates'][0]
         latitude = phfeature['geometry']['coordinates'][1]
+
 
         sqlf.write("(\'{0}\', {1}, {2}, {3}, {4}, \'{5}\'), \r\n".format(
                         props['Name'], props['oeffentlich'], props['oeffentlich'],
