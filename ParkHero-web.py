@@ -18,6 +18,7 @@ def index():
 
 @app.route('/install')
 def install():
+    db.drop_all()
     db.create_all()
     # Load JSON
     r = requests.get(JSON_URL)
@@ -54,7 +55,18 @@ def users_register():
 
 @app.route('/users/login', methods=['post'])
 def users_login():
-    return 'TODO!'
+    if request.get_json() is not None:
+        data = request.get_json()
+        # Check for required parameters
+        required_parameters = ['email', 'password']
+        for required_parameter in required_parameters:
+            if not required_parameter in data:
+                return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
+        user = User.query.filter_by(email=data['email']).first()
+        if user is None or not user.check_password(data['password']):
+            return jsonify(error="Invalid credentials"), 400
+        return jsonify(user=user.json())
+    return 'NO HTML YET'
 
 
 @app.route('/carparks')
