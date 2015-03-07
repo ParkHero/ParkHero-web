@@ -112,7 +112,6 @@ def carparks_list():
     return 'NO HTML YET'
 
 
-@app.route('/carparks/<carpark_uuid>/checkin', methods=['post'])
 @app.route('/carparks/<carpark_id>/checkin', methods=['post'])
 @token_required
 def carparks_checkin(carpark_id):
@@ -123,9 +122,9 @@ def carparks_checkin(carpark_id):
     return jsonify(carpark=carpark.json())
 
 
-@app.route('/carparks/<carpark_uuid>/checkout', methods=['post'])
+@app.route('/carparks/<carpark_id>/checkout', methods=['post'])
 @token_required
-def carparks_checkout(carpark_uuid):
+def carparks_checkout(carpark_id):
     return 'TODO!'
 
 if __name__ == '__main__':
