@@ -1,4 +1,3 @@
-from datetime import datetime
 import uuid
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -79,3 +78,13 @@ class Checkin(db.Model):
     def __init__(self, user, car_park):
         self.user_id = user.id
         self.car_park = car_park
+    @property
+    def json(self):
+        return {
+            'name': self.name,
+            'slots': self.slots,
+            'free_slots': self.slots_free,
+            'address': self.address,
+            'latitude': func.ST_X(self.location),
+            'longitude': func.ST_Y(self.location)
+        }

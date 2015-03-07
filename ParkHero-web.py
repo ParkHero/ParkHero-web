@@ -1,8 +1,8 @@
 from functools import wraps
 from flask import Flask, render_template, request, jsonify, g
-from flask.ext.bcrypt import Bcrypt
 import requests
 from models import db, CarPark, User, bcrypt, Token, Checkin
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -91,9 +91,28 @@ def token_required(f):
 @app.route('/carparks')
 @token_required
 def carparks_list():
-    return 'TODO!'
+    data = request.args
+
+    required_parameters = {"token", "latitude", "longitude"}
+    for required_parameter in required_parameters:
+        if not required_parameter in data:
+            return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
+
+    if True:
+        long = data["longitude"]
+        lat = data["latitude"]
+        distance = 10
+
+        carpark_list = CarPark.query.filter(func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(long, lat)) <= distance*1000).all()
+        for cp in carpark_list:
+            print(cp.json)
+
+        return jsonify(json_list=[cp.json() for cp in carpark_list])
+
+    return 'NO HTML YET'
 
 
+@app.route('/carparks/<carpark_uuid>/checkin', methods=['post'])
 @app.route('/carparks/<carpark_id>/checkin', methods=['post'])
 @token_required
 def carparks_checkin(carpark_id):
@@ -108,7 +127,6 @@ def carparks_checkin(carpark_id):
 @token_required
 def carparks_checkout(carpark_uuid):
     return 'TODO!'
-
 
 if __name__ == '__main__':
     app.run()
