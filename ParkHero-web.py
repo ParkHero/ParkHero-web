@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask.ext.bcrypt import Bcrypt
 import requests
 from models import db, CarPark, User, bcrypt, Token
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -71,20 +72,23 @@ def users_login():
 
 @app.route('/carparks')
 def carparks_list():
-    if request.get_json() is not None:
-        data = request.get_json()
+    data = request.args
 
-        required_parameters = {"token", "latitude", "longitude"}
-        for required_parameter in required_parameters:
-            if not required_parameter in data:
-                return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
+    required_parameters = {"token", "latitude", "longitude"}
+    for required_parameter in required_parameters:
+        if not required_parameter in data:
+            return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
 
-        if isAuthenticated(data["token"]):
-            long = data["longitude"]
-            lat = data["latitude"]
+    if True:
+        long = data["longitude"]
+        lat = data["latitude"]
+        distance = 10
 
-            CarPark.query.filter_by()
+        carpark_list = CarPark.query.filter(func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(long, lat)) <= distance*1000).all()
+        for cp in carpark_list:
+            print(cp.json)
 
+        return jsonify(json_list=[cp.json() for cp in carpark_list])
 
     return 'NO HTML YET'
 

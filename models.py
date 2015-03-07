@@ -63,3 +63,14 @@ class CarPark(db.Model):
         self.slots_free = slots_free
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
+
+    @property
+    def json(self):
+        return {
+            'name': self.name,
+            'slots': self.slots,
+            'free_slots': self.slots_free,
+            'address': self.address,
+            'latitude': func.ST_X(self.location),
+            'longitude': func.ST_Y(self.location)
+        }
