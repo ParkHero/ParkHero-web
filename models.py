@@ -67,6 +67,16 @@ class CarPark(db.Model):
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
 
+    def json(self):
+        return {
+            'name': self.name,
+            'slots': self.slots,
+            'free_slots': self.slots_free,
+            'address': self.address,
+            'latitude': db.session.scalar(func.ST_X(self.location)),
+            'longitude': db.session.scalar(func.ST_Y(self.location))
+        }
+
 
 class Checkin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,13 +89,3 @@ class Checkin(db.Model):
     def __init__(self, user, car_park):
         self.user_id = user.id
         self.car_park = car_park
-    @property
-    def json(self):
-        return {
-            'name': self.name,
-            'slots': self.slots,
-            'free_slots': self.slots_free,
-            'address': self.address,
-            'latitude': func.ST_X(self.location),
-            'longitude': func.ST_Y(self.location)
-        }

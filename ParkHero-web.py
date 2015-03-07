@@ -85,6 +85,7 @@ def token_required(f):
             return jsonify(error="Required parameters \"token\" is missing or invalid"), 400
         g.user = token.user
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -93,23 +94,16 @@ def token_required(f):
 def carparks_list():
     data = request.args
 
-    required_parameters = {"token", "latitude", "longitude"}
+    required_parameters = ["latitude", "longitude"]
     for required_parameter in required_parameters:
         if not required_parameter in data:
             return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
-
-    if True:
-        long = data["longitude"]
-        lat = data["latitude"]
-        distance = 10
-
-        carpark_list = CarPark.query.filter(func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(long, lat)) <= distance*1000).all()
-        for cp in carpark_list:
-            print(cp.json)
-
-        return jsonify(json_list=[cp.json() for cp in carpark_list])
-
-    return 'NO HTML YET'
+    longitude = data["longitude"]
+    latitude = data["latitude"]
+    distance = 1000
+    carpark_list = CarPark.query.filter(
+        func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)) < distance).all()
+    return jsonify(carparks=[cp.json() for cp in carpark_list])
 
 
 @app.route('/carparks/<carpark_id>/checkin', methods=['post'])
@@ -126,6 +120,7 @@ def carparks_checkin(carpark_id):
 @token_required
 def carparks_checkout(carpark_id):
     return 'TODO!'
+
 
 if __name__ == '__main__':
     app.run()
