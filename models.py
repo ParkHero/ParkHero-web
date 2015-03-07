@@ -58,6 +58,7 @@ class CarPark(db.Model):
     type = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
     free = db.Column(db.Integer, index=True)
+    free_last_update = db.Column(db.DateTime, default=datetime.now)
     location = db.Column(Geometry())
     address = db.Column(db.String(200))
     cost = db.Column(db.Integer)
@@ -70,11 +71,12 @@ class CarPark(db.Model):
             func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)).label('distance')).filter(
             func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)) <= distance)
 
-    def __init__(self, name, type, capacity, free, cost, longitude, latitude, address):
+    def __init__(self, name, type, capacity, free, cost, longitude, latitude, address, free_last_update=datetime.now()):
         self.name = name
         self.type = type
         self.capacity = capacity
         self.free = free
+        self.free_last_update = free_last_update
         self.cost = cost
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
@@ -87,6 +89,7 @@ class CarPark(db.Model):
             'image': 'http://placehold.it/350x150',
             'capacity': self.capacity,
             'free': self.free,
+            'free_last_update': self.free_last_update.isoformat(),
             'address': self.address,
             'cost': self.cost,
             'latitude': latitude if latitude else 0,

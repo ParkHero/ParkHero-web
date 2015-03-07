@@ -4,7 +4,9 @@ from flask import Flask, render_template, request, jsonify, g
 import requests
 from models import db, CarPark, User, bcrypt, Token, Checkin
 from sqlalchemy import func
+from livedata.live_get_collection import LiveGetCollection
 from utils import token_required
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -42,6 +44,19 @@ def install():
     db.session.commit()
     return 'DONE'
 
+@app.route('/reload_spots')
+def reload_spots():
+    live_data = LiveGetCollection()
+    i = 0
+    for data in live_data.get_all():
+        car_park = CarPark.query.filter_by(name=data.name).first()
+        if car_park:
+            car_park.free = data.free
+            car_park.free_last_update = datetime.now()
+            i += 1
+
+    db.session.commit()
+    return jsonify(updated=str(i))
 
 @app.route('/users/register', methods=['post'])
 def users_register():
