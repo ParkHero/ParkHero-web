@@ -77,7 +77,7 @@ class CarPark(db.Model):
             'capacity': self.capacity,
             'free': self.free,
             'address': self.address,
-            'cost': self.cost,
+            'cost': float(self.cost),
             'latitude': db.session.scalar(func.ST_X(self.location)),
             'longitude': db.session.scalar(func.ST_Y(self.location)),
             'distance': 123,
