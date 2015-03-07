@@ -1,4 +1,5 @@
 from functools import wraps
+import random
 from flask import Flask, render_template, request, jsonify, g
 import requests
 from models import db, CarPark, User, bcrypt, Token, Checkin
@@ -29,8 +30,8 @@ def install():
         props = phfeature['properties']
         longitude = phfeature['geometry']['coordinates'][0]
         latitude = phfeature['geometry']['coordinates'][1]
-        carpark = CarPark(props['Name'], props['oeffentlich'], props['oeffentlich'], longitude, latitude,
-                          props['Adresse'])
+        carpark = CarPark(props['Name'], 0, props['oeffentlich'], props['oeffentlich'], random.randint(0, 3) * 100,
+                          longitude, latitude, props['Adresse'])
         db.session.add(carpark)
     # Add default user
     user = User('aaaa', '123456', 'Hans Test', 'test cc')
@@ -77,6 +78,12 @@ def users_login():
     return 'NO HTML YET'
 
 
+@app.route('/users/details')
+@token_required
+def users_details():
+    return jsonify(user=g.user.json())
+
+
 @app.route('/users/checkins')
 @token_required
 def users_checkins():
@@ -96,9 +103,11 @@ def carparks_list():
     longitude = data["longitude"]
     latitude = data["latitude"]
     distance = 1000
-    carpark_list = CarPark.query.filter(
-        func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)) < distance).all()
-    return jsonify(carparks=[cp.json((longitude, latitude)) for cp in carpark_list])
+    carpark_list = CarPark.nearby(longitude, latitude, distance).all()
+    print(carpark_list)
+    return jsonify(
+        carparks=[cp.json(cp_longitude, cp_latitude, cp_distance) for cp, cp_longitude, cp_latitude, cp_distance in
+                  carpark_list])
 
 
 @app.route('/carparks/<carpark_id>/checkin', methods=['post'])

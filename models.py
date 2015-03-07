@@ -55,21 +55,30 @@ class Token(db.Model):
 class CarPark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
+    type = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
     free = db.Column(db.Integer, index=True)
     location = db.Column(Geometry())
     address = db.Column(db.String(200))
-    cost = db.Column(db.Integer, default=500)
+    cost = db.Column(db.Integer)
 
-    def __init__(self, name, capacity, free, longitude, latitude, address):
+    @staticmethod
+    def nearby(longitude, latitude, distance):
+        return CarPark.query.add_column(
+            func.ST_X(CarPark.location).label('longitude')).add_column(
+            func.ST_Y(CarPark.location).label('latitude')).add_column(
+            func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)).label('distance')).filter(
+            func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)) <= distance)
+
+    def __init__(self, name, type, capacity, free, cost, longitude, latitude, address):
         self.name = name
         self.capacity = capacity
         self.free = free
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
 
-    def json(self, lonlat=None):
-        o = {
+    def json(self, longitude=None, latitude=None, distance=None):
+        return {
             'id': self.id,
             'name': self.name,
             'type': 0,
@@ -78,15 +87,10 @@ class CarPark(db.Model):
             'free': self.free,
             'address': self.address,
             'cost': self.cost,
-            'latitude': db.session.scalar(func.ST_X(self.location)),
-            'longitude': db.session.scalar(func.ST_Y(self.location)),
-            'distance': None
+            'latitude': longitude if longitude else 0,
+            'longitude': latitude if latitude else 0,
+            'distance': distance if distance else 0
         }
-        if lonlat and len(lonlat) == 2:
-            longitude, latitude = lonlat
-            o['distance'] = db.session.scalar(
-                func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)))
-        return o
 
 
 class Checkin(db.Model):
