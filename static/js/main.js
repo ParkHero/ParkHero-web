@@ -98,13 +98,9 @@
           var table, tbody;
           table = $("#history-table");
           tbody = table.find('tbody');
-          console.log(tbody);
           tbody.html('');
           return $(data.checkins).each(function(i, checkin) {
-            var date_in, date_out;
-            date_in = Date.parse(checkin.checkin);
-            date_out = Date.parse(checkin.checkout);
-            return tbody.append($("<tr><td><img src=\"" + checkin.carpark.image + "\"></td><td>" + checkin.carpark.name + "</td><td>" + date_in + "</td><td>" + date_out + "</td><td>" + checkin.duration + " min</td><td>" + (checkin.cost / 100) + " CHF</td></tr>"));
+            return tbody.append($("<tr><td><img src=\"" + checkin.carpark.image + "\"></td><td>" + checkin.carpark.name + "</td><td>" + checkin.checkin + "</td><td>" + checkin.checkout + "</td><td>" + checkin.duration + " min</td><td>" + (checkin.cost / 100) + " CHF</td></tr>"));
           });
         },
         error: function() {

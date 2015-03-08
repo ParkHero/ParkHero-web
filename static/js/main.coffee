@@ -91,13 +91,10 @@
       success: (data) ->
         table = $("#history-table")
         tbody = table.find('tbody')
-        console.log(tbody)
         # Clear content
         tbody.html('')
         $(data.checkins).each((i, checkin) ->
-          date_in = Date.parse(checkin.checkin)
-          date_out = Date.parse(checkin.checkout)
-          tbody.append($("<tr><td><img src=\"#{ checkin.carpark.image }\"></td><td>#{ checkin.carpark.name }</td><td>#{ date_in }</td><td>#{ date_out }</td><td>#{ checkin.duration } min</td><td>#{ checkin.cost / 100 } CHF</td></tr>"))
+          tbody.append($("<tr><td><img src=\"#{ checkin.carpark.image }\"></td><td>#{ checkin.carpark.name }</td><td>#{ checkin.checkin }</td><td>#{ checkin.checkout }</td><td>#{ checkin.duration } min</td><td>#{ checkin.cost / 100 } CHF</td></tr>"))
         )
       error: ->
         token = null
