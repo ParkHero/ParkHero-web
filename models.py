@@ -62,6 +62,7 @@ class CarPark(db.Model):
     location = db.Column(Geometry())
     address = db.Column(db.String(200))
     cost = db.Column(db.Integer)
+    image = db.Column(db.String(500))
 
     @staticmethod
     def nearby(longitude, latitude, distance):
@@ -71,22 +72,22 @@ class CarPark(db.Model):
             func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)).label('distance')).filter(
             func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)) <= distance)
 
-    def __init__(self, name, type, capacity, free, cost, longitude, latitude, address, free_last_update=datetime.now()):
+    def __init__(self, name, type, capacity, free, cost, longitude, latitude, address, image):
         self.name = name
         self.type = type
         self.capacity = capacity
         self.free = free
-        self.free_last_update = free_last_update
         self.cost = cost
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
+        self.image = image
 
     def json(self, longitude=None, latitude=None, distance=None):
         return {
             'id': self.id,
             'name': self.name,
             'type': 0,
-            'image': 'http://placehold.it/350x150',
+            'image': self.image,
             'capacity': self.capacity,
             'free': self.free,
             'free_last_update': self.free_last_update.isoformat(),
@@ -108,15 +109,15 @@ class Checkin(db.Model):
     carpark_id = db.Column(db.Integer, db.ForeignKey('car_park.id'))
     carpark = db.relationship('CarPark', backref=db.backref('checkins', lazy='dynamic'))
 
-    def __init__(self, user, car_park):
+    def __init__(self, user, carpark):
         self.user_id = user.id
-        self.car_park = car_park
+        self.carpark = carpark
 
     def checkout_now(self):
         self.checkout = datetime.now()
         duration = self.checkout - self.checkin
         self.duration = (duration.days * 60 * 24 + duration.seconds / 60)
-        self.cost = int(duration / 60.0 * self.carpark.cost)
+        self.cost = int(self.duration / 60.0 * self.carpark.cost)
 
     def json(self):
         return {

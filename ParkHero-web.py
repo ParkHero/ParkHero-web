@@ -1,12 +1,10 @@
-from functools import wraps
 import random
 from flask import Flask, render_template, request, jsonify, g
 import requests
 from models import db, CarPark, User, bcrypt, Token, Checkin
-from sqlalchemy import func
 from livedata.live_get_collection import LiveGetCollection
 from utils import token_required
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -28,19 +26,27 @@ def install():
     # Load JSON
     r = requests.get(JSON_URL)
     data = r.json()
+    carparks = []
     for phfeature in data['features']:
         props = phfeature['properties']
         longitude = phfeature['geometry']['coordinates'][0]
         latitude = phfeature['geometry']['coordinates'][1]
         carpark = CarPark(props['Name'], 0, props['oeffentlich'], props['oeffentlich'], random.randint(0, 3) * 100,
-                          longitude, latitude, props['Adresse'])
+                          longitude, latitude, props['Adresse'], props['Link'])
         db.session.add(carpark)
+        carparks.append(carpark)
     # Add default user
     user = User('aaaa', '123456', 'Hans Test', 'test cc')
     db.session.add(user)
     token = Token()
     db.session.add(token)
+    for i in range(20):
+        checkin = Checkin(user, random.choice(carparks))
+        checkin.checkin = datetime.now() - timedelta(seconds=random.randint(10, 300) * 60)
+        checkin.checkout_now()
+        db.session.add(checkin)
     user.add_token(token)
+
     db.session.commit()
     return 'DONE'
 
