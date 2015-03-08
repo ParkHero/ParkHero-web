@@ -110,7 +110,7 @@ class Checkin(db.Model):
     carpark = db.relationship('CarPark', backref=db.backref('checkins', lazy='dynamic'))
 
     def __init__(self, user, carpark):
-        self.user_id = user.id
+        self.user = user
         self.carpark = carpark
 
     def checkout_now(self):
@@ -122,8 +122,8 @@ class Checkin(db.Model):
     def json(self):
         return {
             'id': self.id,
-            'checkin': self.checkin,
-            'checkout': self.checkout,
+            'checkin': self.checkin.isoformat(),
+            'checkout': self.checkout.isoformat(),
             'duration': self.duration,
             'cost': self.cost,
             'user': self.user.json(),
