@@ -1,7 +1,7 @@
 import random
 from flask import Flask, render_template, request, jsonify, g, url_for
 import requests
-from models import db, CarPark, User, bcrypt, Token, Checkin
+from models import db, CarPark, User, bcrypt, Token, Checkin, CarParkChoice
 from livedata.live_get_collection import LiveGetCollection
 from utils import token_required
 from datetime import datetime, timedelta
@@ -178,11 +178,18 @@ def carparks_checkin(carpark_id):
 def carparks_checkout(carpark_id):
     carpark = CarPark.query.get_or_404(carpark_id)
     checkin = carpark.checkins.filter_by(user_id=g.user.id).filter_by(checkout=None).first_or_404()
-    print(checkin)
     checkin.checkout_now()
     db.session.commit()
     return jsonify(carpark=carpark.json(), duration=checkin.duration, cost=checkin.cost)
 
+@app.route('/carparks/<carpark_id>/details')
+@token_required
+def carparks_details(carpark_id):
+    carpark = CarPark.query.get_or_404(carpark_id)
+    choice = CarParkChoice(g.user, carpark)
+    db.session.add(choice)
+    db.session.commit()
+    return jsonify(carpark=carpark.json(), user=g.user.json())
 
 if __name__ == '__main__':
     app.run()

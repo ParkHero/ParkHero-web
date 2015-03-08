@@ -129,3 +129,16 @@ class Checkin(db.Model):
             'user': self.user.json(),
             'carpark': self.carpark.json()
         }
+
+
+class CarParkChoice(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    user = db.relation('User', backref=db.backref('carpark_choices', lazy='dynamic'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    carpark = db.relationship('CarPark', backref=db.backref('choices', lazy='dynamic'))
+    carpark_id = db.Column(db.Integer, db.ForeignKey('car_park.id'))
+
+    def __init__(self, user, carpark):
+        self.user = user
+        self.carpark = carpark
