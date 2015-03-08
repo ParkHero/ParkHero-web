@@ -177,7 +177,7 @@ def carparks_checkin(carpark_id):
 @app.route('/carparks/<carpark_id>/checkout', methods=['post'])
 @token_required
 def carparks_checkout(carpark_id):
-    carpark = CarPark.get_or_404(carpark_id)
+    carpark = CarPark.query.get_or_404(carpark_id)
     checkin = carpark.checkins.filter_by(user_id=g.user.id).first_or_404()
     checkin.checkout_now()
     db.session.commit()
