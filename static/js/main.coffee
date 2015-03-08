@@ -137,6 +137,9 @@
         token = data.user.token
         localStorage.setItem('token', token)
         load_user()
+      error: (data) ->
+        $('#login-error-text').html(data.responseJSON.error)
+        $('#login-error').modal()
     })
     false
 
