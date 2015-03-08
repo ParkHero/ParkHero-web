@@ -87,7 +87,7 @@ class CarPark(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'type': 0,
+            'type': self.type,
             'image': url_for('static', filename=self.image),
             'capacity': self.capacity,
             'free': self.free,
