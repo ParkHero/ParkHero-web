@@ -1,7 +1,7 @@
 import random
 from flask import Flask, render_template, request, jsonify, g
 import requests
-from models import db, CarPark, User, bcrypt, Token, Checkin
+from models import db, CarPark, User, bcrypt, Token, AdminToken, Checkin, ParkAdmin
 from livedata.live_get_collection import LiveGetCollection
 from utils import token_required
 from datetime import datetime, timedelta
@@ -23,6 +23,11 @@ def index():
 def install():
     db.drop_all()
     db.create_all()
+
+    admin = ParkAdmin('admin', 'pw', 'mail')
+    db.session.add(admin)
+    db.session.commit()
+
     # Load JSON
     r = requests.get(JSON_URL)
     data = r.json()
@@ -32,7 +37,7 @@ def install():
         longitude = phfeature['geometry']['coordinates'][0]
         latitude = phfeature['geometry']['coordinates'][1]
         carpark = CarPark(props['Name'], 0, props['oeffentlich'], props['oeffentlich'], random.randint(0, 3) * 100,
-                          longitude, latitude, props['Adresse'], props['Link'])
+                          longitude, latitude, props['Adresse'], props['Link'], admin.id)
         db.session.add(carpark)
         carparks.append(carpark)
     # Add default user
@@ -40,6 +45,7 @@ def install():
     db.session.add(user)
     token = Token()
     db.session.add(token)
+
     for i in range(20):
         checkin = Checkin(user, random.choice(carparks))
         checkin.checkin = datetime.now() - timedelta(seconds=random.randint(10, 300) * 60)
@@ -150,6 +156,37 @@ def carparks_checkout(carpark_id):
     db.session.commit()
     return jsonify(carpark=carpark.json(), duration=checkin.duration, cost=checkin.cost)
 
+@app.route('/admins/register', methods=['post'])
+def admins_register():
+    if request.get_json() is not None:
+        data = request.get_json()
+        required_parameters = ['name', 'email', 'password']
+        for parm in required_parameters:
+            if not parm in data:
+                return jsonify(error='Required parameter \"{0}\" is missing'.format(parm)), 400
+
+        admin = ParkAdmin(data['name'], data['password'], data['email'])
+        token = AdminToken()
+        admin.add_token(token)
+        db.session.add(admin)
+        db.session.add(token)
+        db.session.commit()
+        return jsonify(admin=admin.json())
+    return 'invalid request', 400
+
+@app.route('/admins/login', methods=['get'])
+def admins_login():
+    req_args = request.args
+    required_parms = ['email', 'password']
+    for parm in required_parms:
+        if not parm in req_args:
+            return jsonify(error='Required parameter \"{0}\" is missing'.format(parm)), 400
+
+    admin = ParkAdmin.query.filter_by(email=req_args['email']).first()
+    if admin is None or not admin.check_password(req_args['password']):
+        return jsonify(error='No user found'), 401
+
+    return jsonify(admin=admin.json())
 
 if __name__ == '__main__':
     app.run()

@@ -63,6 +63,7 @@ class CarPark(db.Model):
     address = db.Column(db.String(200))
     cost = db.Column(db.Integer)
     image = db.Column(db.String(500))
+    parkadmin_id = db.Column(db.Integer, db.ForeignKey('parkadmin.id'))
 
     @staticmethod
     def nearby(longitude, latitude, distance):
@@ -72,7 +73,7 @@ class CarPark(db.Model):
             func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)).label('distance')).filter(
             func.ST_Distance_Sphere(CarPark.location, func.ST_MakePoint(longitude, latitude)) <= distance)
 
-    def __init__(self, name, type, capacity, free, cost, longitude, latitude, address, image):
+    def __init__(self, name, type, capacity, free, cost, longitude, latitude, address, image, parkadmin_id):
         self.name = name
         self.type = type
         self.capacity = capacity
@@ -81,6 +82,7 @@ class CarPark(db.Model):
         self.location = func.ST_SetSRID(func.ST_MakePoint(longitude, latitude), 4269)
         self.address = address
         self.image = image
+        self.parkadmin_id = parkadmin_id
 
     def json(self, longitude=None, latitude=None, distance=None):
         return {
@@ -131,12 +133,14 @@ class Checkin(db.Model):
         }
 
 class ParkAdmin(db.Model):
+    __tablename__ = 'parkadmin'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, 200)
-    email = db.Column(db.String, 100)
-    password = db.Column(db.String, 100)
+    name = db.Column(db.String(200))
+    email = db.Column(db.String(100))
+    password = db.Column(db.String(100))
     create_date = db.Column(db.DateTime, default=datetime.now())
-    carparks = db.relationship('CarPark')
+    carparks = db.relationship('CarPark', backref='parkadmin', lazy='dynamic')
+    tokens = db.relationship('AdminToken', backref='parkadmin', lazy='dynamic')
 
     def __init__(self, name, password, email):
         self.name = name
@@ -146,10 +150,30 @@ class ParkAdmin(db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
 
+    def add_carpark(self, carpark):
+        self.carparks.append(carpark)
+
+    def add_token(self, token):
+        self.tokens.append(token)
+
     def json(self):
+        t = self.tokens.first()
         return {
             'id': self.id,
             'name': self.name,
             'email': self.email,
             'crate_date': self.create_date,
+            'token': t.json() if t else None
         }
+
+class AdminToken(db.Model):
+    __tablename__ = 'admin_token'
+
+    id = db.Column(db.String(36), primary_key=True)
+    parkadmin_id = db.Column(db.Integer, db.ForeignKey('parkadmin.id'))
+
+    def __init__(self):
+        self.id = str(uuid.uuid4())
+
+    def json(self):
+        return self.id

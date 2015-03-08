@@ -222,3 +222,57 @@ OR ON ERROR
 
 ### GET /refresh_spots
 Update free spots in database. Should be called by crontab
+
+### POST /admins/register
+#### Request
+```json
+{
+    "name": "name"
+    "email": "email",
+    "password": "my passwd"
+}
+```
+
+#### Response
+```json
+{
+    admin {
+        "name": "name"
+        "email": "email",
+        "password": "my passwd"  
+        "token": "token..."
+    }
+}
+```
+OR ON ERROR
+```json
+{
+    "error": "Error message"
+}
+```
+
+### POST /admins/login
+#### Request
+```json
+{
+    "email": "email",
+    "password": "my passwd"
+}
+```
+#### Response
+```json
+{
+    admin {
+        "name": "name"
+        "email": "email",
+        "token": "token..."
+    }
+}
+
+OR ON ERROR
+```json
+{
+    "error": "Error message"
+}
+```
+```
