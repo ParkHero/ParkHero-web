@@ -129,3 +129,27 @@ class Checkin(db.Model):
             'user': self.user.json(),
             'carpark': self.carpark.json()
         }
+
+class ParkAdmin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, 200)
+    email = db.Column(db.String, 100)
+    password = db.Column(db.String, 100)
+    create_date = db.Column(db.DateTime, default=datetime.now())
+    carparks = db.relationship('CarPark')
+
+    def __init__(self, name, password, email):
+        self.name = name
+        self.password = bcrypt.generate_password_hash(password)
+        self.email = email
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
+    def json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'crate_date': self.create_date,
+        }
