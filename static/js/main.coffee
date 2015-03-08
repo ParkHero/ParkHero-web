@@ -1,18 +1,25 @@
 (($) ->
-  load_user = (token) ->
+  token = localStorage.getItem('token')
+  latitude = 47.3824883072708
+  longitude = 8.54028777940725
+
+  load_user = ->
     $.ajax({
       url: '/users/details',
       type: 'GET',
       data: {
         token: token
       },
-      ontentType: 'application/json',
+      contentType: 'application/json',
       success: (data) ->
         $("#navbar-login").hide()
         $("#navbar-user").show()
         $("#navbar-user").removeClass('hidden')
         $(".content").hide()
         $("#content-history").show()
+      error: ->
+        token = null
+        localStorage.removeItem('token')
     })
 
   map = null
@@ -58,17 +65,54 @@
       }),
       contentType: 'application/json',
       success: (data) ->
-        localStorage.setItem('token', data.user.token)
-        load_user(data.user.token)
+        token = data.user.token
+        localStorage.setItem('token', token)
+        load_user()
+        $('#registration').modal('hide')
       error: (data) ->
         $('#login-error-text').html(data.responseJSON.error)
         $('#login-error').modal()
     })
     false
 
-  token = localStorage.getItem('token')
+  load_history = ->
+    $.ajax({
+      url: '/users/checkins',
+      type: 'GET',
+      data: {
+        token: token
+      },
+      contentType: 'application/json',
+      success: (data) ->
+        console.log(data)
+      error: ->
+        token = null
+        localStorage.removeItem('token')
+    })
+
+  init_map = ->
+    $(".content").hide()
+    $("#content-map").show()
+    map = new GMaps({
+      div: '#map',
+      lat: latitude,
+      lng: longitude,
+      dragend: load_carparks
+    })
+
+    load_carparks()
+
+  GMaps.geolocate({
+    success: (position) ->
+      latitude = position.coords.latitude
+      longitude = position.coords.longitude
+      map.setCenter(latitude, longitude);
+    error: (error) ->
+      $('#map-error').modal()
+  })
+
   if token != null
-    load_user(token)
+    load_user()
 
   $("#login-form").submit ->
     $.ajax({
@@ -80,9 +124,9 @@
       }),
       contentType: 'application/json',
       success: (data) ->
-        localStorage.setItem('token', data.user.token)
-        load_user(data.user.token)
-        $('#registration').modal('hide')
+        token = data.user.token
+        localStorage.setItem('token', token)
+        load_user()
     })
     false
 
@@ -108,24 +152,24 @@
   $("#navbar-history").click ->
     $(".content").hide()
     $("#content-history").show()
+    load_history()
     false
 
   $("#navbar-map").click ->
-    $(".content").hide()
-    $("#content-map").show()
-    map = new GMaps({
-      div: '#map',
-      lat: 47.3824883072708,
-      lng: 8.54028777940725,
-      dragend: load_carparks
-    })
+    init_map()
+    false
 
-    GMaps.geolocate({
-      success: (position) ->
-        map.setCenter(position.coords.latitude, position.coords.longitude);
-      error: (error) ->
-        $('#map-error').modal()
-    })
-    load_carparks()
+  $('#search-form').submit ->
+    init_map()
+    GMaps.geocode({
+      address: $('#search-address').val(),
+      callback: (results, status) ->
+        if status == 'OK'
+          latlng = results[0].geometry.location;
+          latitude = latlng.lat()
+          longitude = latlng.lng()
+          map.setCenter(latlng.lat(), latlng.lng());
+          load_carparks()
+    });
     false
 ) jQuery
