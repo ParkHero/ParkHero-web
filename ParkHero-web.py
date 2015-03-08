@@ -65,9 +65,18 @@ def install():
         latitude = phfeature['geometry']['coordinates'][1]
         image = IMAGES.get(props['Name'], 'img/carparks/misc.jpg')
         carpark = CarPark(props['Name'], 0, props['oeffentlich'], props['oeffentlich'], random.randint(0, 3) * 100,
-                          longitude, latitude, props['Adresse'], url_for('static', filename=image))
+                          longitude, latitude, props['Adresse'], image)
         db.session.add(carpark)
         carparks.append(carpark)
+    carpark = CarPark('Leonhardshalde', 1, 10, 5, 0, 8.54517, 47.37708, 'Leonhardshalde', 'img/carparks/misc.jpg')
+    db.session.add(carpark)
+    carparks.append(carpark)
+    carpark = CarPark('Clausiusstrasse', 1, 20, 3, 0, 8.54586, 47.37963, 'Clausiusstrasse', 'img/carparks/misc.jpg')
+    db.session.add(carpark)
+    carparks.append(carpark)
+    carpark = CarPark('Huttenstrasse', 1, 5, 5, 0, 8.55139, 47.38012, 'Huttenstrasse', 'img/carparks/misc.jpg')
+    db.session.add(carpark)
+    carparks.append(carpark)
     # Add default user
     user = User('aaaa', '123456', 'Hans Test', 'test cc')
     db.session.add(user)

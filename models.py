@@ -1,5 +1,6 @@
 from datetime import datetime
 import uuid
+from flask import url_for
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
@@ -87,7 +88,7 @@ class CarPark(db.Model):
             'id': self.id,
             'name': self.name,
             'type': 0,
-            'image': self.image,
+            'image': url_for('static', filename=self.image),
             'capacity': self.capacity,
             'free': self.free,
             'free_last_update': self.free_last_update.isoformat(),
