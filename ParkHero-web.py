@@ -1,5 +1,5 @@
 import random
-from flask import Flask, render_template, request, jsonify, g
+from flask import Flask, render_template, request, jsonify, g, url_for
 import requests
 from models import db, CarPark, User, bcrypt, Token, Checkin
 from livedata.live_get_collection import LiveGetCollection
@@ -12,6 +12,38 @@ db.init_app(app)
 bcrypt.init_app(app)
 
 JSON_URL = 'http://data.stadt-zuerich.ch/ogd.GnEZFYm.link'
+IMAGES = {
+    'Accu': '/img/carparks/accu.jpg',
+    'Albisriederplatz': '/img/carparks/albisriederplatz.jpg',
+    'Bleicherweg': '/img/carparks/bleicherweg.jpg',
+    'Center Eleven': '/img/carparks/center_11.jpg',
+    'Central': '/img/carparks/central.jpg',
+    'City Parking': '/img/carparks/city.jpg',
+    'Cityport': '/img/carparks/cityport.jpg',
+    'Crowne Plaza': '/img/carparks/crowne_plaza.jpg',
+    'Dorflinde': '/img/carparks/dorflinde.jpg',
+    'Feldegg': '/img/carparks/feldegg.jpg',
+    'Globus': '/img/carparks/globus.jpg',
+    'Hardau II': '/img/carparks/hardau.jpg',
+    'Hauptbahnhof': '/img/carparks/hb.jpg',
+    'Jelmoli': '/img/carparks/jelmoli.jpg',
+    'Jungholz': '/img/carparks/jungholz.jpg',
+    'Max Bill-Platz': '/img/carparks/max_bill_platz.jpg',
+    'Messe': '/img/carparks/messe.jpg',
+    'Nordhaus': '/img/carparks/nordhaus.jpg',
+    'Octavo': '/img/carparks/octavo.jpg',
+    'Opéra': '/img/carparks/opera.jpg',
+    'P West': '/img/carparks/p_west.jpg',
+    'Park Hyatt': '/img/carparks/park_hyatt.jpg',
+    'Parkside': '/img/carparks/parkside.jpg',
+    'Pfingstweid': '/img/carparks/pfingsweid.jpg',
+    'Talgarten': '/img/carparks/talgarten.jpg',
+    'Universität Irchel': '/img/carparks/uni_irchel.jpg',
+    'Urania': '/img/carparks/urania.jpg',
+    'Utoquai': '/img/carparks/utoquai.jpg',
+    'Züri 11': '/img/carparks/zueri11.jpg',
+    'Zürichhorn (Baurstrasse)': '/img/carparks/zuerichhorn.jpg',
+}
 
 
 @app.route('/')
@@ -31,8 +63,9 @@ def install():
         props = phfeature['properties']
         longitude = phfeature['geometry']['coordinates'][0]
         latitude = phfeature['geometry']['coordinates'][1]
+        image = IMAGES.get(props['Name'], '/img/carparks/misc.jpg')
         carpark = CarPark(props['Name'], 0, props['oeffentlich'], props['oeffentlich'], random.randint(0, 3) * 100,
-                          longitude, latitude, props['Adresse'], props['Link'])
+                          longitude, latitude, props['Adresse'], url_for('static', filename=image))
         db.session.add(carpark)
         carparks.append(carpark)
     # Add default user
@@ -134,7 +167,7 @@ def carparks_list():
 @app.route('/carparks/<carpark_id>/checkin', methods=['post'])
 @token_required
 def carparks_checkin(carpark_id):
-    carpark = CarPark.get_or_404(carpark_id)
+    carpark = CarPark.query.get_or_404(carpark_id)
     checkin = Checkin(g.user, carpark)
     db.session.add(checkin)
     db.session.commit()
