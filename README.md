@@ -72,7 +72,7 @@ OR ON ERROR
 }
 ```
 
-### GET /user/checkins
+### GET /users/checkins
 
 #### Request:
 Parameters sent in query string
