@@ -13,36 +13,36 @@ bcrypt.init_app(app)
 
 JSON_URL = 'http://data.stadt-zuerich.ch/ogd.GnEZFYm.link'
 IMAGES = {
-    'Accu': '/img/carparks/accu.jpg',
-    'Albisriederplatz': '/img/carparks/albisriederplatz.jpg',
-    'Bleicherweg': '/img/carparks/bleicherweg.jpg',
-    'Center Eleven': '/img/carparks/center_11.jpg',
-    'Central': '/img/carparks/central.jpg',
-    'City Parking': '/img/carparks/city.jpg',
-    'Cityport': '/img/carparks/cityport.jpg',
-    'Crowne Plaza': '/img/carparks/crowne_plaza.jpg',
-    'Dorflinde': '/img/carparks/dorflinde.jpg',
-    'Feldegg': '/img/carparks/feldegg.jpg',
-    'Globus': '/img/carparks/globus.jpg',
-    'Hardau II': '/img/carparks/hardau.jpg',
-    'Hauptbahnhof': '/img/carparks/hb.jpg',
-    'Jelmoli': '/img/carparks/jelmoli.jpg',
-    'Jungholz': '/img/carparks/jungholz.jpg',
-    'Max Bill-Platz': '/img/carparks/max_bill_platz.jpg',
-    'Messe': '/img/carparks/messe.jpg',
-    'Nordhaus': '/img/carparks/nordhaus.jpg',
-    'Octavo': '/img/carparks/octavo.jpg',
-    'Opéra': '/img/carparks/opera.jpg',
-    'P West': '/img/carparks/p_west.jpg',
-    'Park Hyatt': '/img/carparks/park_hyatt.jpg',
-    'Parkside': '/img/carparks/parkside.jpg',
-    'Pfingstweid': '/img/carparks/pfingsweid.jpg',
-    'Talgarten': '/img/carparks/talgarten.jpg',
-    'Universität Irchel': '/img/carparks/uni_irchel.jpg',
-    'Urania': '/img/carparks/urania.jpg',
-    'Utoquai': '/img/carparks/utoquai.jpg',
-    'Züri 11': '/img/carparks/zueri11.jpg',
-    'Zürichhorn (Baurstrasse)': '/img/carparks/zuerichhorn.jpg',
+    'Accu': 'img/carparks/accu.jpg',
+    'Albisriederplatz': 'img/carparks/albisriederplatz.jpg',
+    'Bleicherweg': 'img/carparks/bleicherweg.jpg',
+    'Center Eleven': 'img/carparks/center_11.jpg',
+    'Central': 'img/carparks/central.jpg',
+    'City Parking': 'img/carparks/city.jpg',
+    'Cityport': 'img/carparks/cityport.jpg',
+    'Crowne Plaza': 'img/carparks/crowne_plaza.jpg',
+    'Dorflinde': 'img/carparks/dorflinde.jpg',
+    'Feldegg': 'img/carparks/feldegg.jpg',
+    'Globus': 'img/carparks/globus.jpg',
+    'Hardau II': 'img/carparks/hardau.jpg',
+    'Hauptbahnhof': 'img/carparks/hb.jpg',
+    'Jelmoli': 'img/carparks/jelmoli.jpg',
+    'Jungholz': 'img/carparks/jungholz.jpg',
+    'Max Bill-Platz': 'img/carparks/max_bill_platz.jpg',
+    'Messe': 'img/carparks/messe.jpg',
+    'Nordhaus': 'img/carparks/nordhaus.jpg',
+    'Octavo': 'img/carparks/octavo.jpg',
+    'Opéra': 'img/carparks/opera.jpg',
+    'P West': 'img/carparks/p_west.jpg',
+    'Park Hyatt': 'img/carparks/park_hyatt.jpg',
+    'Parkside': 'img/carparks/parkside.jpg',
+    'Pfingstweid': 'img/carparks/pfingsweid.jpg',
+    'Talgarten': 'img/carparks/talgarten.jpg',
+    'Universität Irchel': 'img/carparks/uni_irchel.jpg',
+    'Urania': 'img/carparks/urania.jpg',
+    'Utoquai': 'img/carparks/utoquai.jpg',
+    'Züri 11': 'img/carparks/zueri11.jpg',
+    'Zürichhorn (Baurstrasse)': 'img/carparks/zuerichhorn.jpg',
 }
 
 
@@ -63,7 +63,7 @@ def install():
         props = phfeature['properties']
         longitude = phfeature['geometry']['coordinates'][0]
         latitude = phfeature['geometry']['coordinates'][1]
-        image = IMAGES.get(props['Name'], '/img/carparks/misc.jpg')
+        image = IMAGES.get(props['Name'], 'img/carparks/misc.jpg')
         carpark = CarPark(props['Name'], 0, props['oeffentlich'], props['oeffentlich'], random.randint(0, 3) * 100,
                           longitude, latitude, props['Adresse'], url_for('static', filename=image))
         db.session.add(carpark)

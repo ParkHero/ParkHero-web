@@ -17,6 +17,11 @@
         $("#navbar-user").removeClass('hidden')
         $(".content").hide()
         $("#content-history").show()
+
+        # Populate account page
+        $('#account-name').val(data.user.name)
+        $('#account-email').val(data.user.email)
+        load_history()
       error: ->
         token = null
         localStorage.removeItem('token')
@@ -84,7 +89,16 @@
       },
       contentType: 'application/json',
       success: (data) ->
-        console.log(data)
+        table = $("#history-table")
+        tbody = table.find('tbody')
+        console.log(tbody)
+        # Clear content
+        tbody.html('')
+        $(data.checkins).each((i, checkin) ->
+          date_in = Date.parse(checkin.checkin)
+          date_out = Date.parse(checkin.checkout)
+          tbody.append($("<tr><td><img src=\"#{ checkin.carpark.image }\"></td><td>#{ checkin.carpark.name }</td><td>#{ date_in }</td><td>#{ date_out }</td><td>#{ checkin.duration } min</td><td>#{ checkin.cost / 100 } CHF</td></tr>"))
+        )
       error: ->
         token = null
         localStorage.removeItem('token')
@@ -102,14 +116,15 @@
 
     load_carparks()
 
-  GMaps.geolocate({
-    success: (position) ->
-      latitude = position.coords.latitude
-      longitude = position.coords.longitude
-      map.setCenter(latitude, longitude);
-    error: (error) ->
-      $('#map-error').modal()
-  })
+  if map
+    GMaps.geolocate({
+      success: (position) ->
+        latitude = position.coords.latitude
+        longitude = position.coords.longitude
+        map.setCenter(latitude, longitude);
+      error: (error) ->
+        $('#map-error').modal()
+    })
 
   if token != null
     load_user()

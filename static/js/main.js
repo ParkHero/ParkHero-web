@@ -18,7 +18,10 @@
           $("#navbar-user").show();
           $("#navbar-user").removeClass('hidden');
           $(".content").hide();
-          return $("#content-history").show();
+          $("#content-history").show();
+          $('#account-name').val(data.user.name);
+          $('#account-email').val(data.user.email);
+          return load_history();
         },
         error: function() {
           token = null;
@@ -92,7 +95,17 @@
         },
         contentType: 'application/json',
         success: function(data) {
-          return console.log(data);
+          var table, tbody;
+          table = $("#history-table");
+          tbody = table.find('tbody');
+          console.log(tbody);
+          tbody.html('');
+          return $(data.checkins).each(function(i, checkin) {
+            var date_in, date_out;
+            date_in = Date.parse(checkin.checkin);
+            date_out = Date.parse(checkin.checkout);
+            return tbody.append($("<tr><td><img src=\"" + checkin.carpark.image + "\"></td><td>" + checkin.carpark.name + "</td><td>" + date_in + "</td><td>" + date_out + "</td><td>" + checkin.duration + " min</td><td>" + (checkin.cost / 100) + " CHF</td></tr>"));
+          });
         },
         error: function() {
           token = null;
@@ -111,16 +124,18 @@
       });
       return load_carparks();
     };
-    GMaps.geolocate({
-      success: function(position) {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        return map.setCenter(latitude, longitude);
-      },
-      error: function(error) {
-        return $('#map-error').modal();
-      }
-    });
+    if (map) {
+      GMaps.geolocate({
+        success: function(position) {
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          return map.setCenter(latitude, longitude);
+        },
+        error: function(error) {
+          return $('#map-error').modal();
+        }
+      });
+    }
     if (token !== null) {
       load_user();
     }

@@ -25,9 +25,45 @@
 
 <div id="content-history" class="content container">
     <h1>History</h1>
+    <table id="history-table" class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Car Park</th>
+                <th>Checkin</th>
+                <th>Checkout</th>
+                <th>Duration</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 </div>
 
 <div id="content-account" class="content container">
     <h1>Account</h1>
+    <form id="account-form">
+        <div class="form-group">
+            <label for="account-name">Name</label>
+            <input type="text" class="form-control" id="account-name" placeholder="Name">
+        </div>
+        <div class="form-group">
+            <label for="account-email">Email</label>
+            <input type="text" class="form-control" id="account-email" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <label for="account-password">Password</label>
+            <input type="text" class="form-control" id="account-password" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <label for="account-creditcard">Credit Card</label>
+            <input type="text" class="form-control" id="account-creditcard" placeholder="Credit Card">
+        </div>
+        <div class="form-group">
+            <label for="registration-submit">Submit</label>
+            <button type="submit" class="btn btn-default" id="registration-submit">Submit</button>
+        </div>
+    </form>
 </div>
 {% endblock %}
