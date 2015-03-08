@@ -148,6 +148,10 @@
           token = data.user.token;
           localStorage.setItem('token', token);
           return load_user();
+        },
+        error: function(data) {
+          $('#login-error-text').html(data.responseJSON.error);
+          return $('#login-error').modal();
         }
       });
       return false;
