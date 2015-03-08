@@ -2,6 +2,7 @@
   token = localStorage.getItem('token')
   latitude = 47.3824883072708
   longitude = 8.54028777940725
+  map = null
 
   load_user = ->
     $.ajax({
@@ -26,8 +27,6 @@
         token = null
         localStorage.removeItem('token')
     })
-
-  map = null
 
   load_carparks = ->
     $(map.markers).each((i, marker) ->
@@ -110,10 +109,9 @@
       lng: longitude,
       dragend: load_carparks
     })
-
     load_carparks()
 
-  if map
+  if map?
     GMaps.geolocate({
       success: (position) ->
         latitude = position.coords.latitude
@@ -123,7 +121,7 @@
         $('#map-error').modal()
     })
 
-  if token != null
+  if token?
     load_user()
 
   $("#login-form").submit ->

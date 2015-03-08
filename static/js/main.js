@@ -5,6 +5,7 @@
     token = localStorage.getItem('token');
     latitude = 47.3824883072708;
     longitude = 8.54028777940725;
+    map = null;
     load_user = function() {
       return $.ajax({
         url: '/users/details',
@@ -29,7 +30,6 @@
         }
       });
     };
-    map = null;
     load_carparks = function() {
       var center;
       $(map.markers).each(function(i, marker) {
@@ -120,7 +120,7 @@
       });
       return load_carparks();
     };
-    if (map) {
+    if (map != null) {
       GMaps.geolocate({
         success: function(position) {
           latitude = position.coords.latitude;
@@ -132,7 +132,7 @@
         }
       });
     }
-    if (token !== null) {
+    if (token != null) {
       load_user();
     }
     $("#login-form").submit(function() {
