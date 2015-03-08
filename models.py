@@ -123,7 +123,7 @@ class Checkin(db.Model):
         return {
             'id': self.id,
             'checkin': self.checkin.isoformat(),
-            'checkout': self.checkout.isoformat(),
+            'checkout': self.checkout.isoformat() if self.checkout else None,
             'duration': self.duration,
             'cost': self.cost,
             'user': self.user.json(),
