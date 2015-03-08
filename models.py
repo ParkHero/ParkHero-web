@@ -4,6 +4,7 @@ from flask import url_for
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
+from math import ceil
 from sqlalchemy import func
 
 db = SQLAlchemy()
@@ -117,8 +118,8 @@ class Checkin(db.Model):
     def checkout_now(self):
         self.checkout = datetime.now()
         duration = self.checkout - self.checkin
-        self.duration = (duration.days * 60 * 24 + duration.seconds / 60)
-        self.cost = int(self.duration / 60.0 * self.carpark.cost)
+        self.duration = duration.days * 60 * 24 + duration.seconds / 60
+        self.cost = int(ceil(self.duration / 60.0 * self.carpark.cost))
 
     def json(self):
         return {
