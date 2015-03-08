@@ -156,7 +156,7 @@
       return register();
     });
     $('#registration-submit').click(function() {
-      return register();
+      return $('#registration-form').submit();
     });
     $('#navbar-register').click(function() {
       return $('#registration').modal();
@@ -178,7 +178,7 @@
       init_map();
       return false;
     });
-    return $('#search-form').submit(function() {
+    $('#search-form').submit(function() {
       init_map();
       GMaps.geocode({
         address: $('#search-address').val(),
@@ -191,6 +191,30 @@
             map.setCenter(latlng.lat(), latlng.lng());
             return load_carparks();
           }
+        }
+      });
+      return false;
+    });
+    return $('#account-form').submit(function() {
+      var data;
+      data = {
+        token: token,
+        email: $('#account-email').val(),
+        name: $('#account-name').val()
+      };
+      if ($('#account-password').val() != null) {
+        data.password = $('#account-password').val();
+      }
+      if ($('#account-creditcard').val() != null) {
+        data.creditcard = $('#account-creditcard').val();
+      }
+      $.ajax({
+        url: '/users/update',
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(data) {
+          return load_user();
         }
       });
       return false;

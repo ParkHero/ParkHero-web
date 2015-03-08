@@ -144,7 +144,7 @@
     register()
   )
   $('#registration-submit').click(->
-    register()
+    $('#registration-form').submit()
   )
 
   $('#navbar-register').click(->
@@ -182,4 +182,25 @@
           load_carparks()
     });
     false
+
+  $('#account-form').submit(->
+    data = {
+      token: token
+      email: $('#account-email').val()
+      name: $('#account-name').val()
+    }
+    if $('#account-password').val()?
+      data.password = $('#account-password').val()
+    if $('#account-creditcard').val()?
+      data.creditcard = $('#account-creditcard').val()
+    $.ajax({
+      url: '/users/update',
+      type: 'POST',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      success: (data) ->
+        load_user()
+    })
+    false
+  )
 ) jQuery

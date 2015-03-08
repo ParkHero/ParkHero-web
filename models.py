@@ -23,12 +23,15 @@ class User(db.Model):
 
     def __init__(self, email, password, name, creditcard):
         self.email = email
-        self.password = bcrypt.generate_password_hash(password)
+        self.set_password(password)
         self.name = name
         self.creditcard = creditcard
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
+
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password)
 
     def json(self):
         token = self.tokens.first()

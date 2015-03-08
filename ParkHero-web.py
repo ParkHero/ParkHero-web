@@ -124,6 +124,26 @@ def users_register():
         return jsonify(user=user.json())
     return 'NO HTML YET'
 
+@app.route('/users/update', methods=['post'])
+@token_required
+def users_update():
+    if request.get_json() is not None:
+        data = request.get_json()
+        # Check for required parameters
+        required_parameters = ['email', 'name']
+        for required_parameter in required_parameters:
+            if not required_parameter in data:
+                return jsonify(error="Required parameters \"{0}\" is missing".format(required_parameter)), 400
+        g.user.email = data['email']
+        g.user.name = data['name']
+        if 'password' in data and data['password']:
+            g.user.set_password(data['password'])
+        if 'creditcard' in data and data['creditcard']:
+            g.user.set_password(data['creditcard'])
+        db.session.commit()
+        return jsonify(user=g.user.json())
+    return 'NO HTML YET'
+
 
 @app.route('/users/login', methods=['post'])
 def users_login():
