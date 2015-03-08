@@ -158,7 +158,6 @@ def carparks_list():
     latitude = data["latitude"]
     distance = 1000
     carpark_list = CarPark.nearby(longitude, latitude, distance).all()
-    print(carpark_list)
     return jsonify(
         carparks=[cp.json(cp_longitude, cp_latitude, cp_distance) for cp, cp_longitude, cp_latitude, cp_distance in
                   carpark_list])
@@ -179,6 +178,7 @@ def carparks_checkin(carpark_id):
 def carparks_checkout(carpark_id):
     carpark = CarPark.query.get_or_404(carpark_id)
     checkin = carpark.checkins.filter_by(user_id=g.user.id).first_or_404()
+    print(checkin)
     checkin.checkout_now()
     db.session.commit()
     return jsonify(carpark=carpark.json(), duration=checkin.duration, cost=checkin.cost)
