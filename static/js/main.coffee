@@ -49,7 +49,7 @@
             lat: carpark.latitude,
             title: carpark.name,
             infoWindow: {
-              content: '<h5>' + carpark.name + '</h5>' + carpark.free,
+              content: "<h5>#{ carpark.name }</h5><img src=\"#{ carpark.image }\"><br>Parking spots: #{ carpark.free }/#{ carpark.capacity}<br>Cost: CHF #{ carpark.cost / 100 } / h<br>#{ carpark.address }",
             }
           })
         )
